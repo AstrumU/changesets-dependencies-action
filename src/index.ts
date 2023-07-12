@@ -156,10 +156,7 @@ async function fetchJsonFile(
     return defaultConfig;
   });
   const relevantPackages = packages.packages
-    .filter(
-      (pkg) => !changesetsConfig.ignore.includes(pkg.packageJson.name) // &&
-      // !pkg.packageJson.private
-    )
+    .filter((pkg) => !changesetsConfig.ignore.includes(pkg.packageJson.name))
     .map((p) => ({
       ...p,
       absolutePath: `${p.dir}/package.json`,
