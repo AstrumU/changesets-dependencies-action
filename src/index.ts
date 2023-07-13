@@ -265,7 +265,7 @@ async function fetchJsonFile(
     };
 
     // @ts-ignore
-    changesets.releases.push(changeset.releases);
+    changesets.releases.push(...changeset.releases);
 
     changesets.summary = `
 ---
