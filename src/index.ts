@@ -264,7 +264,6 @@ async function fetchJsonFile(
       summary: changes.join("\n"),
     };
 
-    // @ts-ignore
     changesets.releases.push(...changeset.releases);
 
     changesets.summary = `
@@ -284,8 +283,10 @@ ${changesets.summary}
 
   console.debug(`Writing changeset to ${filePath}`, changesetContents);
 
-  const formattedOutput = await tryPrettier(workdir, changesetContents);
-  await writeFile(filePath, formattedOutput);
+  if (changesets.releases.length) {
+    const formattedOutput = await tryPrettier(workdir, changesetContents);
+    await writeFile(filePath, formattedOutput);
+  }
 
   /////////////////////
   const preCommit = core.getInput("preCommit");
