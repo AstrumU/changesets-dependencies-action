@@ -274,21 +274,22 @@ dependencies updates:
 ${changeset.summary}`;
   }
 
-  const changesetContents = `---
-${changesets.releases
-  .map((release) => `'${release.name}': ${release.type}`)
-  .join("\n")}
-${changesets.summary}
-`;
-
-  console.debug(`Writing changeset to ${filePath}`, changesetContents);
-
   if (changesets.releases.length) {
+    const changesetContents = `---
+  ${changesets.releases
+    .map((release) => `'${release.name}': ${release.type}`)
+    .join("\n")}
+  ${changesets.summary}
+  `;
+
+    console.debug(`Writing changeset to ${filePath}`, changesetContents);
+
     const formattedOutput = await tryPrettier(workdir, changesetContents);
     await writeFile(filePath, formattedOutput);
+  } else {
+    console.debug("No changes found");
   }
 
-  /////////////////////
   const preCommit = core.getInput("preCommit");
 
   if (preCommit) {
