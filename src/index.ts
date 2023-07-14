@@ -276,12 +276,12 @@ ${changeset.summary}`;
 
   if (changesets.releases.length) {
     const changesetContents = `
-  ---
-  ${changesets.releases
-    .map((release) => `'${release.name}': ${release.type}`)
-    .join("\n")}
-  ${changesets.summary}
-  `;
+---
+${changesets.releases
+  .map((release) => `'${release.name}': ${release.type}`)
+  .join("\n")}
+${changesets.summary}
+`;
 
     console.debug(`Writing changeset to ${filePath}`, changesetContents);
 
