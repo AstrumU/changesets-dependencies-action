@@ -213,6 +213,22 @@ async function fetchJsonFile(
   const changesetBase = path.resolve(workdir, ".changeset");
   await mkdirp(changesetBase).catch(() => null);
 
+  const cleanName = sanitize(branch, {
+    replacement: "_",
+  });
+  const filePath = path.resolve(
+    changesetBase,
+    `${cleanName}-${issueContext.number}-dependencies.md`
+  );
+
+  let changesets: {
+    releases: Array<{ name: string; type: string }>;
+    summary: string;
+  } = {
+    releases: [],
+    summary: "",
+  };
+
   for (const [key, value] of changes) {
     const changes = [
       ...value.dependencies
@@ -227,14 +243,6 @@ async function fetchJsonFile(
       key,
       changes,
     });
-
-    const cleanName = sanitize(key, {
-      replacement: "_",
-    });
-    const filePath = path.resolve(
-      changesetBase,
-      `${cleanName}-${issueContext.number}-dependencies.md`
-    );
 
     if (changes.length === 0) {
       const stats = await stat(filePath).catch(() => null);
@@ -256,21 +264,31 @@ async function fetchJsonFile(
       summary: changes.join("\n"),
     };
 
-    const changesetContents = `---
-${changeset.releases
-  .map((release) => `'${release.name}': ${release.type}`)
-  .join("\n")}
+    changesets.releases.push(...changeset.releases);
+
+    changesets.summary = `
 ---
 
 dependencies updates: 
+    
+${changeset.summary}`;
+  }
 
-${changeset.summary}
+  if (changesets.releases.length) {
+    const changesetContents = `
+---
+${changesets.releases
+  .map((release) => `'${release.name}': ${release.type}`)
+  .join("\n")}
+${changesets.summary}
 `;
 
     console.debug(`Writing changeset to ${filePath}`, changesetContents);
 
     const formattedOutput = await tryPrettier(workdir, changesetContents);
     await writeFile(filePath, formattedOutput);
+  } else {
+    console.debug("No changes found");
   }
 
   const preCommit = core.getInput("preCommit");
