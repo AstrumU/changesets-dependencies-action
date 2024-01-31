@@ -1,7 +1,7 @@
 name: ChangesetsDependencies
 description: A GitHub action to automate Changesets creation based on dependencies changes in `package.json` files.
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"
 inputs:
   preCommit:
